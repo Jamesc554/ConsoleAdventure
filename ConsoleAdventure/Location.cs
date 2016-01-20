@@ -9,6 +9,7 @@ namespace ConsoleAdventure
     public class Location
     {
         public string name;
+        public bool hasCombat;
         public List<Location> locations;
         public List<string> enterText;
 

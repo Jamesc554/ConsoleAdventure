@@ -81,9 +81,10 @@ namespace ConsoleAdventure
             };
 
             forest.name = "Forest";
+            forest.hasCombat = true;
             forest.locations = new List<Location>()
             {
-                town
+                town, forest
             };
             forest.enterText = new List<string>()
             {
@@ -144,7 +145,7 @@ namespace ConsoleAdventure
 
             AddLocations();
             AddMonsters();
-            Goto(town);
+            Goto(town, true);
         }
 
         public Monster GetMonster(Location currentLocation)
@@ -168,7 +169,7 @@ namespace ConsoleAdventure
             return monster;
         }
 
-        public void Goto(Location location)
+        public void Goto(Location location, bool doCombatCheck)
         {
             Clear();
             player.Goto(location);
@@ -184,17 +185,30 @@ namespace ConsoleAdventure
             }
             Print("\n");
 
+            if (location.hasCombat)
+            {
+                if (random.Next(0, 2) == 1)
+                {
+                    Thread.Sleep(1000);
+                    Clear();
+                    Monster monster = GetMonster(location);
+                    PrintLine(String.Format("A Level {0} {1}, has appeared in the {2}", monster.level, monster.name, location.name));
+                    PrintLine(String.Format("Health: {0}/{1}    Attack: {2}    Defence: {3}", monster.health, monster.maxHealth, monster.attack, monster.defence));
+                }
+            }
 
             try
             {
-                Goto(location.locations[Convert.ToInt32(ReadLine("Where would you like to go? ")) - 1]);
+                Goto(location.locations[Convert.ToInt32(ReadLine("Where would you like to go? ")) - 1], true);
             }
             catch (Exception)
             {
                 PrintLine("You have typed in an incorrect destination.");
                 Thread.Sleep(1500);
-                Goto(location);
+                Goto(location, false);
             }
+
+
         }
 
         #region Util Methods
