@@ -18,10 +18,13 @@ namespace ConsoleAdventure
     class Game
     {
         public List<Monster> monsterTypes = new List<Monster>();
+
+        // TODO - FIND BETTER WAY OF DOING THIS!
         public Location town = new Location();
         public Location inn = new Location();
         public Location shop = new Location();
         public Location forest = new Location();
+
         public Player player;
 
         public Random random = new Random();
