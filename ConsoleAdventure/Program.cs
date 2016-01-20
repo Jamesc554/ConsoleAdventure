@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 
-namespace TextBasedAdventure
+namespace ConsoleAdventure
 {
     class Program
     {
@@ -185,8 +185,8 @@ namespace TextBasedAdventure
             try
             {
                 Goto(location.locations[Convert.ToInt32(ReadLine("Where would you like to go? ")) - 1]);
-            } 
-            catch(Exception)
+            }
+            catch (Exception)
             {
                 PrintLine("You have typed in an incorrect destination.");
                 Thread.Sleep(1500);
