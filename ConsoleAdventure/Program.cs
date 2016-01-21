@@ -35,14 +35,6 @@ namespace ConsoleAdventure
 
             Start();
 
-            //for (int i = 0; i < 30; i++)
-            //{
-            //    Monster monster = GetMonster("Forest");
-
-            //    PrintLine(String.Format("A Level {0} {1}, has appeared in the {2}", monster.level, monster.name, player.location));
-            //    PrintLine(String.Format("Health: {0}/{1}    Attack: {2}    Defence: {3}", monster.health, monster.maxHealth, monster.attack, monster.defence));
-            //}
-
             ReadLine();
         }
 
@@ -197,7 +189,7 @@ namespace ConsoleAdventure
             AddToDisplay(locations.ToString());
             AddToDisplay("\n");
 
-            if (location.hasCombat)
+            if (location.hasCombat && doCombatCheck)
             {
                 if (random.Next(0, 2) == 1)
                 {
@@ -234,22 +226,42 @@ namespace ConsoleAdventure
                 Clear();
                 AddToDisplay(String.Format("A Level {0} {1}, has appeared in the {2}", monster.level, monster.name, player.location.name));
                 AddToDisplay(String.Format("Health: {0}/{1}    Attack: {2}    Defence: {3}", monster.health, monster.maxHealth, monster.attack, monster.defence));
-                AddToDisplay("1. Attack     2. Defende      3. Abilities/Spells     4. Items");
+                AddToDisplay("");
+                AddToDisplay("");
+                AddToDisplay("");
+                AddToDisplay("");
+                AddToDisplay("");
+                AddToDisplay("");
+                AddToDisplay("");
+                AddToDisplay("");
+                AddToDisplay("");
+                AddToDisplay("");
+                AddToDisplay(String.Format("Health: {0}/{1}    Attack: {2}    Defence: {3}", player.health, player.maxHealth, player.attack, player.defence));
+                AddToDisplay("1. Attack     2. Defend      3. Abilities/Spells     4. Items");
 
                 string input = ReadLine("What would you like to do? ");
 
                 switch (input)
                 {
                     case ("1"):
-                        monster.health -= (player.attack - monster.defence / 4);
+                        if (player.attack < monster.defence / 2)
+                            monster.health -= 1;
+                        else
+                            monster.health -= (player.attack - monster.defence / 2);
                         break;
                     default:
                         break;
                 }
+
+                if (monster.attack < player.defence / 2)
+                    player.health -= 1;
+                else
+                    player.health -= (monster.attack - player.defence / 2);
             }
 
             Clear();
             AddToDisplay(String.Format("You have killed a level {0} {1} and gained 12 exp", monster.level, monster.name));
+            Thread.Sleep(500);
             Goto(player.location, false);
         }
 
