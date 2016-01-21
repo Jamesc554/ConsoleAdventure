@@ -18,6 +18,7 @@ namespace ConsoleAdventure
     class Game
     {
         public List<Monster> monsterTypes = new List<Monster>();
+        public List<string> currentDisplay = new List<string>();
 
         // TODO - FIND BETTER WAY OF DOING THIS!
         public Location town = new Location();
@@ -141,7 +142,14 @@ namespace ConsoleAdventure
         {
             player = new Player();
             player.name = ReadLine("What is your name? ");
-            player.level = 1;
+            player.level = 100;
+            player.baseHealth = 10;
+            player.baseAttack = 5;
+            player.baseDefence = 4;
+            player.healthMultiplier = 0.6;
+            player.attackMultiplier = 0.5;
+            player.defenceMultiplier = 0.5;
+            player.calculateStats();
 
             AddLocations();
             AddMonsters();
@@ -173,33 +181,41 @@ namespace ConsoleAdventure
         {
             Clear();
             player.Goto(location);
+            Monster monster = null;
+            bool inCombat = false;
 
             for (int i = 0; i < location.enterText.Count; i++)
             {
-                PrintLine(location.enterText[i]);
+                AddToDisplay((location.enterText[i]));
             }
 
+            StringBuilder locations = new StringBuilder();
             for (int i = 0; i < location.locations.Count; i++)
             {
-                Print(String.Format("{0}. {1}   ", i + 1, location.locations[i].name));
+                locations.Append(String.Format("{0}. {1}   ", i + 1, location.locations[i].name));
             }
-            Print("\n");
+            AddToDisplay(locations.ToString());
+            AddToDisplay("\n");
 
             if (location.hasCombat)
             {
                 if (random.Next(0, 2) == 1)
                 {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(400);
                     Clear();
-                    Monster monster = GetMonster(location);
-                    PrintLine(String.Format("A Level {0} {1}, has appeared in the {2}", monster.level, monster.name, location.name));
-                    PrintLine(String.Format("Health: {0}/{1}    Attack: {2}    Defence: {3}", monster.health, monster.maxHealth, monster.attack, monster.defence));
+                    monster = GetMonster(location);
+                    inCombat = true;
                 }
             }
 
             try
             {
-                Goto(location.locations[Convert.ToInt32(ReadLine("Where would you like to go? ")) - 1], true);
+                if (!inCombat)
+                    Goto(location.locations[Convert.ToInt32(ReadLine("Where would you like to go? ")) - 1], true);
+                else
+                {
+                    DoCombat(monster);
+                }
             }
             catch (Exception)
             {
@@ -209,6 +225,47 @@ namespace ConsoleAdventure
             }
 
 
+        }
+
+        void DoCombat(Monster monster)
+        {
+            while (monster.health > 0)
+            {
+                Clear();
+                AddToDisplay(String.Format("A Level {0} {1}, has appeared in the {2}", monster.level, monster.name, player.location.name));
+                AddToDisplay(String.Format("Health: {0}/{1}    Attack: {2}    Defence: {3}", monster.health, monster.maxHealth, monster.attack, monster.defence));
+                AddToDisplay("1. Attack     2. Defende      3. Abilities/Spells     4. Items");
+
+                string input = ReadLine("What would you like to do? ");
+
+                switch (input)
+                {
+                    case ("1"):
+                        monster.health -= (player.attack - monster.defence / 4);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            Clear();
+            AddToDisplay(String.Format("You have killed a level {0} {1} and gained 12 exp", monster.level, monster.name));
+            Goto(player.location, false);
+        }
+
+        void AddToDisplay(string text)
+        {
+            currentDisplay.Add(text);
+            ClearD();
+            ShowDisplay();
+        }
+
+        void ShowDisplay()
+        {
+            for (int i = 0; i < currentDisplay.Count; i++)
+            {
+                PrintLine(currentDisplay[i]);
+            }
         }
 
         #region Util Methods
@@ -235,6 +292,12 @@ namespace ConsoleAdventure
         }
 
         void Clear()
+        {
+            Console.Clear();
+            currentDisplay = new List<string>();
+        }
+
+        void ClearD()
         {
             Console.Clear();
         }
