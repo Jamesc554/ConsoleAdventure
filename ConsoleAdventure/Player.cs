@@ -8,14 +8,13 @@ namespace ConsoleAdventure
 {
     public class Player : ICloneable
     {
-        public int health, maxHealth, level, attack, defence, baseHealth, baseAttack, baseDefence;
+        public int health, maxHealth, level, attack, defence, baseHealth, baseAttack, baseDefence, experience, nextLevelExperience;
         public double healthMultiplier, attackMultiplier, defenceMultiplier;
         public string name;
         public Location location;
 
         public Player()
         {
-
         }
 
         public void calculateStats()
@@ -35,6 +34,32 @@ namespace ConsoleAdventure
         public void Goto(Location location)
         {
             this.location = location;
+        }
+
+        public void ChangeExperience(int amount)
+        {
+            experience += amount;
+
+            if (experience >= nextLevelExperience)
+                LevelUp();
+        }
+
+        public void LevelUp()
+        {
+            level++;
+            Game.instance.AddToDisplay(String.Format("You have reached level {0}", level));
+            CalculateNextExperience();
+            calculateStats();
+
+            if (experience >= nextLevelExperience)
+            {
+                LevelUp();
+            }
+        }
+
+        public void CalculateNextExperience() // ((level^3) + ((level / 3)^3)) * 10
+        {
+            nextLevelExperience = ((int)((Math.Pow(level, 3)) + (Math.Pow((level / 3), 3))) * 10) + 73;
         }
     }
 }
